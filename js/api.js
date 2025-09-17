@@ -1,6 +1,6 @@
 // Configuración de la API
 const API_CONFIG = {
-    baseURL: 'http://localhost:3000/api',
+    baseURL: 'https://evaluacion1express.onrender.com/api',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json'
