@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            100: '#1f2937',
+                            200: '#111827',
+                            300: '#0f172a',
+                            400: '#0c1015'
+                        },
+                        accent: {
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca'
+                        }
+                    },
+                    animation: {
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'pulse-slow': 'pulse 3s infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(31, 41, 55, 0.8);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+        .gradient-border {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6, #06b6d4);
+            padding: 1px;
+        }
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen text-gray-100">
+    <!-- Floating Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-72 h-72 bg-accent-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-slow"></div>
+        <div class="absolute top-3/4 right-1/4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-slow animation-delay-2000"></div>
+        <div class="absolute bottom-1/4 left-1/3 w-72 h-72 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-slow animation-delay-4000"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-10 glass-effect border-b border-gray-700">
+        <div class="container mx-auto px-6 py-5">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div>
+                        <h1 class="text-3xl font-bold bg-gradient-to-r from-accent-500 to-purple-500 bg-clip-text text-transparent">
+                            Gestión de Productos
+                        </h1>
+                    </div>
+                </div>
+                <button id="btnNuevoProducto" class="group relative overflow-hidden bg-gradient-to-r from-accent-600 to-purple-600 hover:from-accent-700 hover:to-purple-700 px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 neon-glow">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative flex items-center space-x-2">
+                        <i class="fas fa-plus"></i>
+                        <span class="font-medium">Nuevo Producto</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 container mx-auto px-6 py-8">
+        <!-- Filtros -->
+        <div class="glass-effect rounded-xl p-8 mb-8 animate-slide-up">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <i class="fas fa-filter text-accent-500 mr-3"></i>
+                    Filtros de Búsqueda
+                </h2>
+                <div class="flex items-center space-x-2">
+                    <button id="btnToggleFiltros" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fas fa-chevron-up" id="iconToggleFiltros"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="contenidoFiltros" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-300">Categoría</label>
+                    <select id="filtroCategoría" class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent text-white">
+                        <option value="">Todas las categorías</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-300">Precio Mínimo</label>
+                    <input type="number" id="filtroPrecioMin" placeholder="0.00" class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent text-white placeholder-gray-400">
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-300">Precio Máximo</label>
+                    <input type="number" id="filtroPrecioMax" placeholder="999.99" class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent text-white placeholder-gray-400">
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-300">Disponibilidad</label>
+                    <select id="filtroDisponible" class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent text-white">
+                        <option value="">Todos</option>
+                        <option value="true">Disponibles</option>
+                        <option value="false">Agotados</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-6 flex flex-wrap gap-3">
+                <button id="btnAplicarFiltros" class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-2">
+                    <i class="fas fa-search"></i>
+                    <span>Aplicar Filtros</span>
+                </button>
+                <button id="btnLimpiarFiltros" class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-2">
+                    <i class="fas fa-times"></i>
+                    <span>Limpiar</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="hidden flex justify-center items-center py-12">
+            <div class="relative">
+                <div class="animate-spin rounded-full h-16 w-16 border-4 border-gray-600 border-t-accent-500"></div>
+                <div class="absolute inset-0 rounded-full bg-accent-500/20 animate-ping"></div>
+            </div>
+        </div>
+
+        <!-- Productos Table -->
+        <div class="glass-effect rounded-xl overflow-hidden animate-slide-up">
+            <div class="px-8 py-6 border-b border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-white flex items-center">
+                            Lista de Productos
+                        </h2>
+                        <p id="totalProductos" class="text-sm text-gray-400 mt-1"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="min-w-full divide-y divide-gray-700">
+                    <thead class="bg-gray-800/50">
+                        <tr>
+                            <th class="px-8 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                <div class="flex items-center space-x-2">
+                                    <span>Producto</span>
+                                    <i class="fas fa-sort text-gray-500"></i>
+                                </div>
+                            </th>
+                            <th class="px-8 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                <div class="flex items-center space-x-2">
+                                    <span>Precio</span>
+                                    <i class="fas fa-sort text-gray-500"></i>
+                                </div>
+                            </th>
+                            <th class="px-8 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                <div class="flex items-center space-x-2">
+                                    <span>Stock</span>
+                                    <i class="fas fa-sort text-gray-500"></i>
+                                </div>
+                            </th>
+                            <th class="px-8 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Categoría</th>
+                            <th class="px-8 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Estado</th>
+                            <th class="px-8 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaProductos" class="bg-gray-800/30 divide-y divide-gray-700">
+                        <!-- Los productos se cargarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            <div id="paginacion" class="px-8 py-6 border-t border-gray-700 flex items-center justify-between bg-gray-800/30">
+                <!-- La paginación se generará dinámicamente -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para Crear/Editar Producto -->
+    <div id="modalProducto" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 animate-fade-in">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="glass-effect rounded-2xl max-w-md w-full shadow-2xl animate-slide-up">
+                <div class="px-8 py-6 border-b border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <h3 id="tituloModal" class="text-xl font-semibold text-white">Nuevo Producto</h3>
+                        <button id="btnCerrarModal" class="text-gray-400 hover:text-white transition-colors p-2">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <form id="formProducto" class="px-8 py-6 space-y-6">
+                    <input type="hidden" id="productoId">
+                    
+                    <div class="space-y-2">
+                        <label for="nombre" class="block text-sm font-medium text-gray-300">Nombre *</label>
+                        <input type="text" id="nombre" name="nombre" required class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent text-white placeholder-gray-400" placeholder="Ingrese el nombre del producto">
+                        <div id="errorNombre" class="text-red-400 text-sm hidden"></div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="descripcion" class="block text-sm font-medium text-gray-300">Descripción *</label>
+                        <textarea id="descripcion" name="descripcion" required rows="3" class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent text-white placeholder-gray-400 resize-none" placeholder="Ingrese la descripción del producto"></textarea>
+                        <div id="errorDescripcion" class="text-red-400 text-sm hidden"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label for="precio" class="block text-sm font-medium text-gray-300">Precio *</label>
+                            <input type="number" id="precio" name="precio" required step="0.01" min="0.01" class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent text-white placeholder-gray-400" placeholder="0.00">
+                            <div id="errorPrecio" class="text-red-400 text-sm hidden"></div>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="stock" class="block text-sm font-medium text-gray-300">Stock *</label>
+                            <input type="number" id="stock" name="stock" required min="0" class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent text-white placeholder-gray-400" placeholder="0">
+                            <div id="errorStock" class="text-red-400 text-sm hidden"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="categoria" class="block text-sm font-medium text-gray-300">Categoría *</label>
+                        <select id="categoria" name="categoria" required class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent text-white">
+                            <option value="">Seleccione una categoría</option>
+                        </select>
+                        <div id="errorCategoria" class="text-red-400 text-sm hidden"></div>
+                    </div>
+                    
+                    <div class="flex space-x-4 pt-6">
+                        <button type="submit" id="btnGuardar" class="flex-1 bg-gradient-to-r from-accent-600 to-purple-600 hover:from-accent-700 hover:to-purple-700 text-white py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2">
+                            <i class="fas fa-save"></i>
+                            <span>Guardar</span>
+                        </button>
+                        <button type="button" id="btnCancelar" class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2">
+                            <i class="fas fa-times"></i>
+                            <span>Cancelar</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación para Eliminar -->
+    <div id="modalConfirmacion" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 animate-fade-in">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="glass-effect rounded-2xl max-w-sm w-full shadow-2xl animate-slide-up">
+                <div class="px-8 py-6">
+                    <div class="flex items-center mb-6">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-red-400 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-white">Confirmar Eliminación</h3>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 mb-8">¿Está seguro que desea eliminar este producto? Esta acción no se puede deshacer.</p>
+                    <div class="flex space-x-4">
+                        <button id="btnConfirmarEliminar" class="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                            Eliminar
+                        </button>
+                        <button id="btnCancelarEliminar" class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed top-6 right-6 z-50 space-y-3">
+        <!-- Los toasts se generarán dinámicamente -->
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>
